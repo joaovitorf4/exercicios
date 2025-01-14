@@ -1,55 +1,46 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
-int calcularDigito(int cpf[], int tamanho, int pesoInicial) {
-    int acumulador = 0;
-    int j = pesoInicial;
-    
-    for (int i = 0; i < tamanho; i++) {
-        acumulador += cpf[i] * j;
-        j--;
+int isValidCPF(char cpf[]) {
+    int digits[11];
+
+    for ( int i = 0; i < 11; i++ ) {
+        if ( cpf[i] >= '0' && cpf[i] <= '9' ) {
+            digits[i] = cpf[i] - '0';
+        }
     }
 
-    int digito = 11 - (acumulador % 11);
-    if (digito > 9) {
-        digito = 0;
+    int sum1 = 0;
+    for ( int i = 0; i < 9; i++ ) {
+        sum1 += digits[i] * ( i + 1 );
     }
 
-    return digito;
+    int b1 = sum1 % 11;
+    if ( b1 == 10 ) b1 = 0;
+
+    int sum2 = 0;
+    for ( int i = 0; i < 9; i++ ) {
+        sum2 += digits[i] * ( 9 - i );
+    }
+    int b2 = sum2 % 11;
+    if ( b2 == 10 ) b2 = 0;
+
+    if ( digits[9] == b1 && digits[10] == b2 ) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 int main() {
-    char cpf[15] = "000.000.000-00";
-    int cpfArray[9];
-    
-    gets(cpf);
-    
-    int j = 0;
-    for (int i = 0; i < strlen(cpf); i++) {
-        if (isdigit(cpf[i])) {
-            cpfArray[j] = cpf[i] - '0';
-            j++;
-        }
-    }
-    
-    int digito1 = calcularDigito(cpfArray, 9, 10);
-    cpfArray[9] = digito1;
-    
-    int digito2 = calcularDigito(cpfArray, 10, 11);
-    cpfArray[10] = digito2;
+    char cpf[15];
 
-    char cpfNovo[15];
-    snprintf(cpfNovo, sizeof(cpfNovo), "%03d.%03d.%03d-%02d", 
-             cpfArray[0] * 100 + cpfArray[1] * 10 + cpfArray[2],
-             cpfArray[3] * 100 + cpfArray[4] * 10 + cpfArray[5],
-             cpfArray[6] * 100 + cpfArray[7] * 10 + cpfArray[8],
-             cpfArray[9] * 10 + cpfArray[10]);
-    
-    if (strcmp(cpfNovo, cpf) == 0) {
-        printf("CPF valido\n");
-    } else {
-        printf("CPF invalido\n");
+    while ( scanf("%s", cpf) != EOF ) {
+        if ( isValidCPF(cpf) ) {
+            printf("CPF valido\n");
+        } else {
+            printf("CPF invalido\n");
+        }
     }
 
     return 0;
